@@ -1,2 +1,2 @@
 # BackportingPR
-The tool can recommend backporting pull-requests in stable versions.
+The tool ReBack can recommend backporting pull-requests in stable versions.
