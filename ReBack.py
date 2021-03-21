@@ -5,7 +5,7 @@ The currebt version of the ReBack can be always found at https://github.com/joyd
 '''
 
 import argparse
-from ultis import extract_commit, reformat_commit_code
+from Utils import extract_commit, reformat_commit_code
 from train import train_model
 from predict import predict_model
 
