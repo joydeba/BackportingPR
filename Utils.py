@@ -42,9 +42,13 @@ def extract_commit(path_file):
         dict["stable"] = stable
         dict["date"] = date
         dict["msg"] = msg
+        dict["Path"] = path
         dict["code"] = code
         dicts.append(dict)
     return dicts
+
+def reformat_path(commits):
+    return commits    
 
 
 def reformat_commit_code(commits, num_file, num_hunk, num_loc, num_leng):
