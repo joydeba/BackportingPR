@@ -1,7 +1,7 @@
 '''
 This model.py python file is part of ReBack, licensed under the CC0 1.0 Universal.
 Details of the license can be found in the LICENSE file.
-The currebt version of the ReBack can be always found at https://github.com/joydeba/BackportingPR
+The current version of the ReBack can be always found at https://github.com/joydeba/BackportingPR
 '''
 
 import numpy as np
