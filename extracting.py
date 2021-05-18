@@ -85,6 +85,9 @@ def extract_msg(commits):
     msgs = [" ".join(c["msg"].split(",")) for c in commits]
     return msgs
 
+def extract_path(commits):
+    paths = [" ".join(p["path"].split(",")) for p in commits]
+    return paths
 
 def extract_line_code(dict_code):
     lines = list()

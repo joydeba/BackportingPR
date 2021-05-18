@@ -4,7 +4,7 @@ Details of the license can be found in the LICENSE file.
 The current version of the ReBack can be always found at https://github.com/joydeba/BackportingPR
 '''
 
-from extracting import extract_msg, extract_code, dictionary
+from extracting import extract_msg, extract_code, dictionary, extract_path
 import numpy as np
 
 def mapping_commit_msg(msgs, max_length, dict_msg):
@@ -20,6 +20,20 @@ def mapping_commit_msg(msgs, max_length, dict_msg):
                 new_line.append(dict_msg['NULL'])
         new_pad_msg.append(np.array(new_line))
     return np.array(new_pad_msg)
+
+def mapping_commit_path(paths, max_length, dict_path):
+    pad_path = padding_multiple_length(lines=paths, max_length=max_length)
+    new_pad_path = list()
+    for line in pad_path:
+        line_split = line.split(" ")
+        new_line = list()
+        for w in line_split:
+            if w in dict_msg:
+                new_line.append(dict_msg[w])
+            else:
+                new_line.append(dict_msg['NULL'])
+        new_pad_path.append(np.array(new_line))
+    return np.array(new_pad_path)
 
 def padding_length(line, max_length):
     line_length = len(line.split())
@@ -118,11 +132,14 @@ def load_label_commits(commits):
     return np.array(labels)    
 
 def padding_commit(commits, params):
-    msgs, codes = extract_msg(commits=commits), extract_code(commits=commits)
-    dict_msg, dict_code = dictionary(data=msgs), dictionary(data=codes)
+    msgs, paths, codes = extract_msg(commits=commits), extract_path(commits=commits), extract_code(commits=commits)
+    dict_msg, dict_path, dict_code = dictionary(data=msgs), dictionary(data=paths), dictionary(data=codes)
 
     # Padding discussion
     pad_msg = mapping_commit_msg(msgs=msgs, max_length=params.msg_length, dict_msg=dict_msg)
+
+    pad_path = mapping_commit_path(paths=paths, max_length=params.msg_length, dict_path=dict_path)
+
     # Padding commit code
     pad_added_code = mapping_commit_code(type="added", commits=commits, max_hunk=params.code_hunk,
                                          max_code_line=params.code_line,
@@ -131,7 +148,7 @@ def padding_commit(commits, params):
                                            max_code_line=params.code_line,
                                            max_code_length=params.code_length, dict_code=dict_code)
     labels = load_label_commits(commits=commits)
-    return pad_msg, pad_added_code, pad_removed_code, labels, dict_msg, dict_code
+    return pad_msg, pad_path, pad_added_code, pad_removed_code, labels, dict_msg, dict_code
 
 
 

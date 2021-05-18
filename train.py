@@ -13,7 +13,7 @@ from Utils import random_mini_batch, write_dict_file
 
 
 def train_model(commits, params):
-    pad_msg, pad_added_code, pad_removed_code, labels, dict_msg, dict_code = \
+    pad_msg, pad_path, pad_added_code, pad_removed_code, labels, dict_msg, dict_code = \
         padding_commit(commits=commits, params=params)
     print 'Commit message dictionary has size: %i' % (len(dict_msg))
     print 'Commit code dictionary has size: %i' % (len(dict_code))
