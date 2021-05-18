@@ -28,10 +28,10 @@ def mapping_commit_path(paths, max_length, dict_path):
         line_split = line.split(" ")
         new_line = list()
         for w in line_split:
-            if w in dict_msg:
-                new_line.append(dict_msg[w])
+            if w in dict_path:
+                new_line.append(dict_path[w])
             else:
-                new_line.append(dict_msg['NULL'])
+                new_line.append(dict_path['NULL'])
         new_pad_path.append(np.array(new_line))
     return np.array(new_pad_path)
 
@@ -148,7 +148,7 @@ def padding_commit(commits, params):
                                            max_code_line=params.code_line,
                                            max_code_length=params.code_length, dict_code=dict_code)
     labels = load_label_commits(commits=commits)
-    return pad_msg, pad_path, pad_added_code, pad_removed_code, labels, dict_msg, dict_code
+    return pad_msg, pad_path, pad_added_code, pad_removed_code, labels, dict_msg, dict_path, dict_code
 
 
 
