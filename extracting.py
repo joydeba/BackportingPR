@@ -18,6 +18,9 @@ def commit_date(commit):
     committer_date = commit[3].strip().split(":")[1].strip()
     return committer_date
 
+def commit_path(commit):
+    commit_path = commit[6].strip()
+    return commit_path
 
 def commit_msg(commit):
     commit_msg = commit[9].strip()

@@ -5,7 +5,7 @@ The current version of the ReBack can be always found at https://github.com/joyd
 '''
 
 import argparse
-from Utils import extract_commit, reformat_commit_code
+from Utils import extract_commit, reformat_commit_code, reformat_path
 from train import train_model
 from predict import predict_model
 

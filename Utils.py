@@ -8,7 +8,7 @@ import numpy as np
 import math
 import os
 
-from extracting import commit_id, commit_stable, commit_msg, commit_date, commit_code
+from extracting import commit_id, commit_stable, commit_msg, commit_date, commit_code, commit_path
 from reformating import reformat_file, reformat_hunk
 
 def load_file(path_file):
@@ -24,9 +24,10 @@ def commit_info(commit):
     id = commit_id(commit)
     stable = commit_stable(commit)
     date = commit_date(commit)
+    path = commit_path(commit)
     msg = commit_msg(commit)
     code = commit_code(commit)
-    return id, stable, date, msg, code    
+    return id, stable, date, path, msg, code    
 
 def extract_commit(path_file):
     commits = load_file(path_file=path_file)
@@ -35,14 +36,14 @@ def extract_commit(path_file):
     for i in xrange(0, len(indexes)):
         dict = {}
         if i == len(indexes) - 1:
-            id, stable, date, msg, code = commit_info(commits[indexes[i]:])
+            id, stable, date, path, msg, code = commit_info(commits[indexes[i]:])
         else:
-            id, stable, date, msg, code = commit_info(commits[indexes[i]:indexes[i + 1]])
+            id, stable, date, path, msg, code = commit_info(commits[indexes[i]:indexes[i + 1]])
         dict["id"] = id
         dict["stable"] = stable
         dict["date"] = date
+        dict["path"] = path
         dict["msg"] = msg
-        dict["Path"] = path
         dict["code"] = code
         dicts.append(dict)
     return dicts
