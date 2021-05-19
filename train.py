@@ -50,6 +50,7 @@ def train_model(commits, params):
             out_dir = os.path.abspath(os.path.join(os.path.curdir, params.model))
             print("Writing to {}\n".format(out_dir))
             write_dict_file(path_file=out_dir + '/dict_msg.txt', dictionary=dict_msg)
+            write_dict_file(path_file=out_dir + '/dict_path.txt', dictionary=dict_path)
             write_dict_file(path_file=out_dir + '/dict_code.txt', dictionary=dict_code)
 
             # Loss and accuracy sumarization
@@ -73,12 +74,13 @@ def train_model(commits, params):
             # Initializing variables
             sess.run(tf.global_variables_initializer())
 
-            def train_step(input_msg, input_added_code, input_removed_code, input_labels):
+            def train_step(input_msg, input_path, input_added_code, input_removed_code, input_labels):
                 """
                 Training step
                 """
                 feed_dict = {
                     model.input_msg: input_msg,
+                    model.input_path: input_path,
                     model.input_addedcode: input_added_code,
                     model.input_removedcode: input_removed_code,
                     model.input_y: input_labels,
@@ -95,13 +97,13 @@ def train_model(commits, params):
 
         for i in xrange(0, params.num_epochs):
             # Batche creation
-            mini_batches = random_mini_batch(X_msg=pad_msg, X_added_code=pad_added_code,
+            mini_batches = random_mini_batch(X_msg=pad_msg, X_path=pad_path, X_added_code=pad_added_code,
                                              X_removed_code=pad_removed_code, Y=labels,
                                              mini_batch_size=params.batch_size)
             for j in xrange(len(mini_batches)):
                 batch = mini_batches[j]
-                input_msg, input_added_code, input_removed_code, input_labels = batch
-                train_step(input_msg, input_added_code, input_removed_code, input_labels)
+                input_msg, input_path, input_added_code, input_removed_code, input_labels = batch
+                train_step(input_msg, input_path, input_added_code, input_removed_code, input_labels)
                 current_step = tf.train.global_step(sess, global_step)
 
             path_curr = saver.save(sess, checkpoint_prefix, global_step=current_step)
