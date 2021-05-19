@@ -26,6 +26,7 @@ def train_model(commits, params):
         with sess.as_default():
             model = ReBack(
                 max_msg_length=params.msg_length,
+                max_path_length=params.path_length,
                 max_code_length=params.code_length,
                 max_code_line=params.code_line,
                 max_code_hunk=params.code_hunk,

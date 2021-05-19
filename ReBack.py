@@ -22,6 +22,7 @@ def read_args():
 
     # Parameters for reformatting discussion and code
     parser.add_argument('--msg_length', type=int, default=512, help='the length of the commit message')
+    parser.add_argument('--path_length', type=int, default=512, help='the length of the path')
     parser.add_argument('--code_hunk', type=int, default=8, help='the number of hunks in commit code')
     parser.add_argument('--code_line', type=int, default=10, help='the number of LOC in each hunk of commit code')
     parser.add_argument('--code_length', type=int, default=120, help='the length of each LOC of commit code')

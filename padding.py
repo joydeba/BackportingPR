@@ -138,7 +138,7 @@ def padding_commit(commits, params):
     # Padding discussion
     pad_msg = mapping_commit_msg(msgs=msgs, max_length=params.msg_length, dict_msg=dict_msg)
 
-    pad_path = mapping_commit_path(paths=paths, max_length=params.msg_length, dict_path=dict_path)
+    pad_path = mapping_commit_path(paths=paths, max_length=params.path_length, dict_path=dict_path)
 
     # Padding commit code
     pad_added_code = mapping_commit_code(type="added", commits=commits, max_hunk=params.code_hunk,
