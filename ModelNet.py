@@ -11,7 +11,7 @@ Model class of ReBack.
 Initialize variables of parameters from the command line inputs
 '''
 class ReBack(object):
-    def __init__(self, max_msg_length, max_path_length, max_code_length, max_code_line, max_code_hunk, vocab_size_text,
+    def __init__(self, max_msg_length, max_path_length, max_code_length, max_code_line, max_code_hunk, vocab_size_text, vocab_size_path,
                     vocab_size_code, embedding_size_text, filter_sizes, num_filters, l2_reg_lambda, num_classes,
                     hidden_units):
         self.max_msg_length = max_msg_length
@@ -20,6 +20,7 @@ class ReBack(object):
         self.max_code_line = max_code_line
         self.max_code_hunk = max_code_hunk
         self.vocab_size_text = vocab_size_text
+        self.vocab_size_path = vocab_size_path
         self.vocab_size_code = vocab_size_code
         self.embedding_size_text = embedding_size_text
         self.filter_sizes = filter_sizes
@@ -61,7 +62,7 @@ class ReBack(object):
     def _create_embedding_path_layer(self):
         with tf.device('/cpu:0'), tf.name_scope("embedding_path"):
             self.W_path = tf.Variable(
-                tf.random_uniform([self.vocab_size_text, self.embedding_size_text], -1.0, 1.0),
+                tf.random_uniform([self.vocab_size_path, self.embedding_size_text], -1.0, 1.0),
                 name="W_path")                
 
     def _create_embedding_code_layer(self):

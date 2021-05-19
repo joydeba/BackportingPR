@@ -31,6 +31,7 @@ def train_model(commits, params):
                 max_code_line=params.code_line,
                 max_code_hunk=params.code_hunk,
                 vocab_size_text=len(dict_msg),
+                vocab_size_path = len(dict_path),
                 vocab_size_code=len(dict_code),
                 embedding_size_text=params.embedding_dim,
                 filter_sizes=list(map(int, params.filter_sizes.split(","))),
