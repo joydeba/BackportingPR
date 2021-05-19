@@ -133,6 +133,19 @@ class ReBack(object):
                     self.w_filter_text.append(w)
                     self.b_filter_text.append(b)
 
+
+    def _create_weight_conv_path_layer(self):
+        self.w_filter_text, self.b_filter_text = [], []
+        for i, filter_size in enumerate(self.filter_sizes):
+            with tf.device("/cpu:" + str(filter_size)):
+                with tf.name_scope("weight-conv-maxpool-text-%s" % filter_size):
+                    filter_shape_text = [filter_size, self.embedding_size_text, 1, self.num_filters]
+                    # Convolution layer
+                    w = tf.Variable(tf.truncated_normal(filter_shape_text, stddev=0.1), name="W_filter_text")
+                    b = tf.Variable(tf.constant(0.1, shape=[self.num_filters]), name="b")
+                    self.w_filter_text.append(w)
+                    self.b_filter_text.append(b)
+
     def _create_conv_maxpool_2d_layer(self, filter_sizes, embedded_chars_expanded, W, b, max_msg_length):
         pooled_outputs_text = []
         for i, filter_size in enumerate(filter_sizes):
@@ -147,6 +160,15 @@ class ReBack(object):
                                                                  embedded_chars_expanded=self.embedded_chars_expanded_msg,
                                                                  W=self.w_filter_text, b=self.b_filter_text,
                                                                  max_msg_length=self.max_msg_length)
+        self.pooled_outputs_text = self.h_pool_2d(num_filters_total=len(self.filter_sizes) * self.num_filters,
+                                                  pooled_outputs=pooled_outputs_text)
+
+
+    def _create_conv_maxpool_path_layer(self):
+        pooled_outputs_text = self._create_conv_maxpool_2d_layer(filter_sizes=self.filter_sizes,
+                                                                 embedded_chars_expanded=self.embedded_chars_expanded_path,
+                                                                 W=self.w_filter_text, b=self.b_filter_text,
+                                                                 max_msg_length=self.max_path_length)
         self.pooled_outputs_text = self.h_pool_2d(num_filters_total=len(self.filter_sizes) * self.num_filters,
                                                   pooled_outputs=pooled_outputs_text)
 
@@ -357,6 +379,8 @@ class ReBack(object):
 
             self._create_embedding_path_layer()
             self._create_embedding_chars_path_layer()
+            self._create_weight_conv_path_layer()
+            self._create_conv_maxpool_path_layer()
 
             self._create_embedding_code_layer()
             self._create_embedding_chars_code_layer()
