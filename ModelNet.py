@@ -31,6 +31,7 @@ class ReBack(object):
     def _create_place_holder(self):
         # Placeholders for discussion and code inputs
         self.input_msg = tf.placeholder(tf.int32, [None, self.max_msg_length], name='input_msg')
+        self.input_path = tf.placeholder(tf.int32, [None, self.max_path_length], name='input_path')
         self.input_addedcode = tf.placeholder(tf.int32,
                                               [None, self.max_code_hunk, self.max_code_line, self.max_code_length],
                                               name='input_addedcode')
@@ -57,6 +58,12 @@ class ReBack(object):
                 tf.random_uniform([self.vocab_size_text, self.embedding_size_text], -1.0, 1.0),
                 name="W_msg")
 
+    def _create_embedding_path_layer(self):
+        with tf.device('/cpu:0'), tf.name_scope("embedding_path"):
+            self.W_path = tf.Variable(
+                tf.random_uniform([self.vocab_size_text, self.embedding_size_text], -1.0, 1.0),
+                name="W_path")                
+
     def _create_embedding_code_layer(self):
         with tf.device('/cpu:0'), tf.name_scope("embedding_code"):
             self.W_code = tf.Variable(
@@ -74,6 +81,11 @@ class ReBack(object):
     def _create_embedding_chars_msg_layer(self):
         self.embedded_chars_expanded_msg = self._create_embedding_chars_layer(W=self.W_msg,
                                                                               input=self.input_msg)
+
+    # Path embeding layer
+    def _create_embedding_chars_path_layer(self):
+        self.embedded_chars_expanded_path = self._create_embedding_chars_layer(W=self.W_path,
+                                                                              input=self.input_path)                                                                              
 
     # Commit code embedding layer 
     def _create_embedding_chars_code_layer(self):
@@ -337,10 +349,15 @@ class ReBack(object):
     def build_graph(self, model):
         if model == "all":
             self._create_place_holder()
+
             self._create_embedding_msg_layer()
             self._create_embedding_chars_msg_layer()
             self._create_weight_conv_msg_layer()
             self._create_conv_maxpool_msg_layer()
+
+            self._create_embedding_path_layer()
+            self._create_embedding_chars_path_layer()
+
             self._create_embedding_code_layer()
             self._create_embedding_chars_code_layer()
             self._create_embedding_addedcode_line()
