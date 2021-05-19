@@ -71,7 +71,7 @@ class ReBack(object):
                 name="W_code")
 
     '''
-    Mapping between embedding vector and discussion and commit code
+    Mapping between embedding vector and discussion, path, and commit code
     '''
     def _create_embedding_chars_layer(self, W, input):
         embedded_chars = tf.nn.embedding_lookup(W, input)
@@ -120,7 +120,7 @@ class ReBack(object):
         h_pool_ = tf.reshape(tf.concat(pooled_outputs, 3), [-1, num_filters_total])
         return h_pool_
 
-    # Weight embedding layer for discussion. Then pooling for discussion
+    # Weight embedding layer for discussion and path. Then pooling for discussion and path
     def _create_weight_conv_msg_layer(self):
         self.w_filter_text, self.b_filter_text = [], []
         for i, filter_size in enumerate(self.filter_sizes):
