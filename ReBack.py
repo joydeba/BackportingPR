@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     commits = extract_commit(path_file=input_option.data)
     commits = reformat_path(commits)
-    commits = reformat_commit_code(commits=commits, num_file=1, num_hunk=input_option.code_hunk,
+    commits = reformat_commit_code(commits=commits, num_file=5, num_hunk=input_option.code_hunk,
                                    num_loc=input_option.code_line, num_leng=input_option.code_length)
 
     if input_option.train is True:
