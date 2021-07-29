@@ -11,16 +11,16 @@ Model class of ReBack.
 Initialize variables of parameters from the command line inputs
 '''
 class ReBack(object):
-    def __init__(self, max_msg_length, max_path_length, max_code_length, max_code_line, max_code_hunk, vocab_size_text, vocab_size_path,
+    def __init__(self, max_msg_length, max_meta_length, max_code_length, max_code_line, max_code_hunk, vocab_size_text, vocab_size_meta,
                     vocab_size_code, embedding_size_text, filter_sizes, num_filters, l2_reg_lambda, num_classes,
                     hidden_units):
         self.max_msg_length = max_msg_length
-        self.max_path_length = max_path_length
+        self.max_meta_length = max_meta_length
         self.max_code_length = max_code_length
         self.max_code_line = max_code_line
         self.max_code_hunk = max_code_hunk
         self.vocab_size_text = vocab_size_text
-        self.vocab_size_path = vocab_size_path
+        self.vocab_size_meta = vocab_size_meta
         self.vocab_size_code = vocab_size_code
         self.embedding_size_text = embedding_size_text
         self.filter_sizes = filter_sizes
@@ -32,7 +32,7 @@ class ReBack(object):
     def _create_place_holder(self):
         # Placeholders for discussion and code inputs
         self.input_msg = tf.placeholder(tf.int32, [None, self.max_msg_length], name='input_msg')
-        self.input_path = tf.placeholder(tf.int32, [None, self.max_path_length], name='input_path')
+        self.input_meta = tf.placeholder(tf.int32, [None, self.max_meta_length], name='input_meta')
         self.input_addedcode = tf.placeholder(tf.int32,
                                               [None, self.max_code_hunk, self.max_code_line, self.max_code_length],
                                               name='input_addedcode')
@@ -59,11 +59,11 @@ class ReBack(object):
                 tf.random_uniform([self.vocab_size_text, self.embedding_size_text], -1.0, 1.0),
                 name="W_msg")
 
-    def _create_embedding_path_layer(self):
-        with tf.device('/cpu:0'), tf.name_scope("embedding_path"):
-            self.W_path = tf.Variable(
-                tf.random_uniform([self.vocab_size_path, self.embedding_size_text], -1.0, 1.0),
-                name="W_path")                
+    def _create_embedding_meta_layer(self):
+        with tf.device('/cpu:0'), tf.name_scope("embedding_meta"):
+            self.W_meta = tf.Variable(
+                tf.random_uniform([self.vocab_size_meta, self.embedding_size_text], -1.0, 1.0),
+                name="W_meta")                
 
     def _create_embedding_code_layer(self):
         with tf.device('/cpu:0'), tf.name_scope("embedding_code"):
@@ -72,7 +72,7 @@ class ReBack(object):
                 name="W_code")
 
     '''
-    Mapping between embedding vector and discussion, path, and commit code
+    Mapping between embedding vector and discussion, meta, and commit code
     '''
     def _create_embedding_chars_layer(self, W, input):
         embedded_chars = tf.nn.embedding_lookup(W, input)
@@ -83,10 +83,10 @@ class ReBack(object):
         self.embedded_chars_expanded_msg = self._create_embedding_chars_layer(W=self.W_msg,
                                                                               input=self.input_msg)
 
-    # Path embeding layer
-    def _create_embedding_chars_path_layer(self):
-        self.embedded_chars_expanded_path = self._create_embedding_chars_layer(W=self.W_path,
-                                                                              input=self.input_path)                                                                              
+    # meta embeding layer
+    def _create_embedding_chars_meta_layer(self):
+        self.embedded_chars_expanded_meta = self._create_embedding_chars_layer(W=self.W_meta,
+                                                                              input=self.input_meta)                                                                              
 
     # Commit code embedding layer 
     def _create_embedding_chars_code_layer(self):
@@ -121,7 +121,7 @@ class ReBack(object):
         h_pool_ = tf.reshape(tf.concat(pooled_outputs, 3), [-1, num_filters_total])
         return h_pool_
 
-    # Weight embedding layer for discussion and path. Then pooling for discussion and path
+    # Weight embedding layer for discussion and meta. Then pooling for discussion and meta
     def _create_weight_conv_msg_layer(self):
         self.w_filter_text, self.b_filter_text = [], []
         for i, filter_size in enumerate(self.filter_sizes):
@@ -135,7 +135,7 @@ class ReBack(object):
                     self.b_filter_text.append(b)
 
 
-    def _create_weight_conv_path_layer(self):
+    def _create_weight_conv_meta_layer(self):
         self.w_filter_text, self.b_filter_text = [], []
         for i, filter_size in enumerate(self.filter_sizes):
             with tf.device("/cpu:" + str(filter_size)):
@@ -165,11 +165,11 @@ class ReBack(object):
                                                   pooled_outputs=pooled_outputs_text)
 
 
-    def _create_conv_maxpool_path_layer(self):
+    def _create_conv_maxpool_meta_layer(self):
         pooled_outputs_text = self._create_conv_maxpool_2d_layer(filter_sizes=self.filter_sizes,
-                                                                 embedded_chars_expanded=self.embedded_chars_expanded_path,
+                                                                 embedded_chars_expanded=self.embedded_chars_expanded_meta,
                                                                  W=self.w_filter_text, b=self.b_filter_text,
-                                                                 max_msg_length=self.max_path_length)
+                                                                 max_msg_length=self.max_meta_length)
         self.pooled_outputs_text = self.h_pool_2d(num_filters_total=len(self.filter_sizes) * self.num_filters,
                                                   pooled_outputs=pooled_outputs_text)
 
@@ -378,10 +378,10 @@ class ReBack(object):
             self._create_weight_conv_msg_layer()
             self._create_conv_maxpool_msg_layer()
 
-            self._create_embedding_path_layer()
-            self._create_embedding_chars_path_layer()
-            self._create_weight_conv_path_layer()
-            self._create_conv_maxpool_path_layer()
+            self._create_embedding_meta_layer()
+            self._create_embedding_chars_meta_layer()
+            self._create_weight_conv_meta_layer()
+            self._create_conv_maxpool_meta_layer()
 
             self._create_embedding_code_layer()
             self._create_embedding_chars_code_layer()

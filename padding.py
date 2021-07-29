@@ -4,7 +4,7 @@ Details of the license can be found in the LICENSE file.
 The current version of the ReBack can be always found at https://github.com/joydeba/BackportingPR
 '''
 
-from extracting import extract_msg, extract_code, dictionary, extract_path
+from extracting import extract_msg, extract_code, dictionary, extract_meta
 import numpy as np
 
 def mapping_commit_msg(msgs, max_length, dict_msg):
@@ -21,19 +21,19 @@ def mapping_commit_msg(msgs, max_length, dict_msg):
         new_pad_msg.append(np.array(new_line))
     return np.array(new_pad_msg)
 
-def mapping_commit_path(paths, max_length, dict_path):
-    pad_path = padding_multiple_length(lines=paths, max_length=max_length)
-    new_pad_path = list()
-    for line in pad_path:
+def mapping_commit_meta(metas, max_length, dict_meta):
+    pad_meta = padding_multiple_length(lines=metas, max_length=max_length)
+    new_pad_meta = list()
+    for line in pad_meta:
         line_split = line.split(" ")
         new_line = list()
         for w in line_split:
-            if w in dict_path:
-                new_line.append(dict_path[w])
+            if w in dict_meta:
+                new_line.append(dict_meta[w])
             else:
-                new_line.append(dict_path['NULL'])
-        new_pad_path.append(np.array(new_line))
-    return np.array(new_pad_path)
+                new_line.append(dict_meta['NULL'])
+        new_pad_meta.append(np.array(new_line))
+    return np.array(new_pad_meta)
 
 def padding_length(line, max_length):
     line_length = len(line.split())
@@ -132,13 +132,13 @@ def load_label_commits(commits):
     return np.array(labels)    
 
 def padding_commit(commits, params):
-    msgs, paths, codes = extract_msg(commits=commits), extract_path(commits=commits), extract_code(commits=commits)
-    dict_msg, dict_path, dict_code = dictionary(data=msgs), dictionary(data=paths), dictionary(data=codes)
+    msgs, metas, codes = extract_msg(commits=commits), extract_meta(commits=commits), extract_code(commits=commits)
+    dict_msg, dict_meta, dict_code = dictionary(data=msgs), dictionary(data=metas), dictionary(data=codes)
 
     # Padding discussion
     pad_msg = mapping_commit_msg(msgs=msgs, max_length=params.msg_length, dict_msg=dict_msg)
 
-    pad_path = mapping_commit_path(paths=paths, max_length=params.path_length, dict_path=dict_path)
+    pad_meta = mapping_commit_meta(metas=metas, max_length=params.meta_length, dict_meta=dict_meta)
 
     # Padding commit code
     pad_added_code = mapping_commit_code(type="added", commits=commits, max_hunk=params.code_hunk,
@@ -148,7 +148,7 @@ def padding_commit(commits, params):
                                            max_code_line=params.code_line,
                                            max_code_length=params.code_length, dict_code=dict_code)
     labels = load_label_commits(commits=commits)
-    return pad_msg, pad_path, pad_added_code, pad_removed_code, labels, dict_msg, dict_path, dict_code
+    return pad_msg, pad_meta, pad_added_code, pad_removed_code, labels, dict_msg, dict_meta, dict_code
 
 
 

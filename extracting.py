@@ -18,9 +18,9 @@ def commit_date(commit):
     committer_date = commit[3].strip().split(":")[1].strip()
     return committer_date
 
-def commit_path(commit):
-    commit_path = commit[6].strip()
-    return commit_path
+def commit_meta(commit):
+    commit_meta = commit[6].strip()
+    return commit_meta
 
 def commit_msg(commit):
     commit_msg = commit[9].strip()
@@ -85,9 +85,9 @@ def extract_msg(commits):
     msgs = [" ".join(c["msg"].split(",")) for c in commits]
     return msgs
 
-def extract_path(commits):
-    paths = [" ".join(p["path"].split(",")) for p in commits]
-    return paths
+def extract_meta(commits):
+    metas = [" ".join(p["meta"].split(",")) for p in commits]
+    return metas
 
 def extract_line_code(dict_code):
     lines = list()

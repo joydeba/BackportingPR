@@ -5,7 +5,7 @@ The current version of the ReBack can be always found at https://github.com/joyd
 '''
 
 import argparse
-from Utils import extract_commit, reformat_commit_code, reformat_path
+from Utils import extract_commit, reformat_commit_code, reformat_meta
 from train import train_model
 from predict import predict_model
 
@@ -22,7 +22,7 @@ def read_args():
 
     # Parameters for reformatting discussion and code
     parser.add_argument('--msg_length', type=int, default=512, help='the length of the commit message')
-    parser.add_argument('--path_length', type=int, default=512, help='the length of the path')
+    parser.add_argument('--meta_length', type=int, default=512, help='the length of the meta')
     parser.add_argument('--code_hunk', type=int, default=8, help='the number of hunks in commit code')
     parser.add_argument('--code_line', type=int, default=10, help='the number of LOC in each hunk of commit code')
     parser.add_argument('--code_length', type=int, default=120, help='the length of each LOC of commit code')
@@ -55,8 +55,8 @@ if __name__ == '__main__':
     input_option = read_args().parse_args()
     input_help = read_args().print_help()
 
-    commits = extract_commit(path_file=input_option.data)
-    commits = reformat_path(commits)
+    commits = extract_commit(meta_file=input_option.data)
+    commits = reformat_meta(commits)
     commits = reformat_commit_code(commits=commits, num_file=5, num_hunk=input_option.code_hunk,
                                    num_loc=input_option.code_line, num_leng=input_option.code_length)
 

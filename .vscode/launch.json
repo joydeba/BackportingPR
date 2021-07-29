@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args": ["--train", "--data", "training_dataSample.out", "--model", "patchnet"],
+            "args": ["--train", "--data", "training_dataSample.out", "--model", "reback"],
             "console": "integratedTerminal"
         }
     ]

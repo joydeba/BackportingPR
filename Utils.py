@@ -8,7 +8,7 @@ import numpy as np
 import math
 import os
 
-from extracting import commit_id, commit_stable, commit_msg, commit_date, commit_code, commit_path
+from extracting import commit_id, commit_stable, commit_msg, commit_date, commit_code, commit_meta
 from reformating import reformat_file, reformat_hunk
 
 def load_file(path_file):
@@ -24,10 +24,10 @@ def commit_info(commit):
     id = commit_id(commit)
     stable = commit_stable(commit)
     date = commit_date(commit)
-    path = commit_path(commit)
+    meta = commit_meta(commit)
     msg = commit_msg(commit)
     code = commit_code(commit)
-    return id, stable, date, path, msg, code    
+    return id, stable, date, meta, msg, code    
 
 def extract_commit(path_file):
     commits = load_file(path_file=path_file)
@@ -36,19 +36,19 @@ def extract_commit(path_file):
     for i in xrange(0, len(indexes)):
         dict = {}
         if i == len(indexes) - 1:
-            id, stable, date, path, msg, code = commit_info(commits[indexes[i]:])
+            id, stable, date, meta, msg, code = commit_info(commits[indexes[i]:])
         else:
-            id, stable, date, path, msg, code = commit_info(commits[indexes[i]:indexes[i + 1]])
+            id, stable, date, meta, msg, code = commit_info(commits[indexes[i]:indexes[i + 1]])
         dict["id"] = id
         dict["stable"] = stable
         dict["date"] = date
-        dict["path"] = path
+        dict["meta"] = meta
         dict["msg"] = msg
         dict["code"] = code
         dicts.append(dict)
     return dicts
 
-def reformat_path(commits):
+def reformat_meta(commits):
     return commits    
 
 
@@ -67,7 +67,7 @@ def reformat_commit_code(commits, num_file, num_hunk, num_loc, num_leng):
 
 
 
-def random_mini_batch(X_msg, X_path, X_added_code, X_removed_code, Y, mini_batch_size=64, seed=0):
+def random_mini_batch(X_msg, X_meta, X_added_code, X_removed_code, Y, mini_batch_size=64, seed=0):
     m = X_msg.shape[0]  # Number of training samples 
     mini_batches = []
     np.random.seed(seed)
@@ -75,7 +75,7 @@ def random_mini_batch(X_msg, X_path, X_added_code, X_removed_code, Y, mini_batch
     # Step 1: Shuffle (X, Y)
     permutation = list(np.random.permutation(m))
     shuffled_X_msg = X_msg[permutation, :]
-    shuffled_X_path = X_path[permutation, :]
+    shuffled_X_meta = X_meta[permutation, :]
     shuffled_X_added = X_added_code[permutation, :, :, :]
     shuffled_X_removed = X_removed_code[permutation, :, :, :]
     if len(Y.shape) == 1:
@@ -90,27 +90,27 @@ def random_mini_batch(X_msg, X_path, X_added_code, X_removed_code, Y, mini_batch
     num_complete_minibatches = int(num_complete_minibatches)
     for k in range(0, num_complete_minibatches):
         mini_batch_X_msg = shuffled_X_msg[k * mini_batch_size: k * mini_batch_size + mini_batch_size, :]
-        mini_batch_X_path = shuffled_X_path[k * mini_batch_size: k * mini_batch_size + mini_batch_size, :]
+        mini_batch_X_meta = shuffled_X_meta[k * mini_batch_size: k * mini_batch_size + mini_batch_size, :]
         mini_batch_X_added = shuffled_X_added[k * mini_batch_size: k * mini_batch_size + mini_batch_size, :, :, :]
         mini_batch_X_removed = shuffled_X_removed[k * mini_batch_size: k * mini_batch_size + mini_batch_size, :, :, :]
         if len(Y.shape) == 1:
             mini_batch_Y = Y[k * mini_batch_size: k * mini_batch_size + mini_batch_size]
         else:
             mini_batch_Y = shuffled_Y[k * mini_batch_size: k * mini_batch_size + mini_batch_size, :]
-        mini_batch = (mini_batch_X_msg, mini_batch_X_path, mini_batch_X_added, mini_batch_X_removed, mini_batch_Y)
+        mini_batch = (mini_batch_X_msg, mini_batch_X_meta, mini_batch_X_added, mini_batch_X_removed, mini_batch_Y)
         mini_batches.append(mini_batch)
 
     # End case
     if m % mini_batch_size != 0:
         mini_batch_X_msg = shuffled_X_msg[num_complete_minibatches * mini_batch_size: m, :]
-        mini_batch_X_path = shuffled_X_path[num_complete_minibatches * mini_batch_size: m, :]
+        mini_batch_X_meta = shuffled_X_meta[num_complete_minibatches * mini_batch_size: m, :]
         mini_batch_X_added = shuffled_X_added[num_complete_minibatches * mini_batch_size: m, :, :, :]
         mini_batch_X_removed = shuffled_X_removed[num_complete_minibatches * mini_batch_size: m, :, :, :]
         if len(Y.shape) == 1:
             mini_batch_Y = shuffled_Y[num_complete_minibatches * mini_batch_size: m]
         else:
             mini_batch_Y = shuffled_Y[num_complete_minibatches * mini_batch_size: m, :]
-        mini_batch = (mini_batch_X_msg, mini_batch_X_path, mini_batch_X_added, mini_batch_X_removed, mini_batch_Y)
+        mini_batch = (mini_batch_X_msg, mini_batch_X_meta, mini_batch_X_added, mini_batch_X_removed, mini_batch_Y)
         mini_batches.append(mini_batch)
     return mini_batches
 

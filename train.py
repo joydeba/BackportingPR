@@ -13,10 +13,10 @@ from Utils import random_mini_batch, write_dict_file
 
 
 def train_model(commits, params):
-    pad_msg, pad_path, pad_added_code, pad_removed_code, labels, dict_msg, dict_path, dict_code = \
+    pad_msg, pad_meta, pad_added_code, pad_removed_code, labels, dict_msg, dict_meta, dict_code = \
         padding_commit(commits=commits, params=params)
     print 'Commit message dictionary has size: %i' % (len(dict_msg))
-    print 'Commit path dictionary has size: %i' % (len(dict_msg))
+    print 'Commit meta dictionary has size: %i' % (len(dict_msg))
     print 'Commit code dictionary has size: %i' % (len(dict_code))
 
     with tf.Graph().as_default():
@@ -26,12 +26,12 @@ def train_model(commits, params):
         with sess.as_default():
             model = ReBack(
                 max_msg_length=params.msg_length,
-                max_path_length=params.path_length,
+                max_meta_length=params.meta_length,
                 max_code_length=params.code_length,
                 max_code_line=params.code_line,
                 max_code_hunk=params.code_hunk,
                 vocab_size_text=len(dict_msg),
-                vocab_size_path = len(dict_path),
+                vocab_size_meta = len(dict_meta),
                 vocab_size_code=len(dict_code),
                 embedding_size_text=params.embedding_dim,
                 filter_sizes=list(map(int, params.filter_sizes.split(","))),
@@ -51,7 +51,7 @@ def train_model(commits, params):
             out_dir = os.path.abspath(os.path.join(os.path.curdir, params.model))
             print("Writing to {}\n".format(out_dir))
             write_dict_file(path_file=out_dir + '/dict_msg.txt', dictionary=dict_msg)
-            write_dict_file(path_file=out_dir + '/dict_path.txt', dictionary=dict_path)
+            write_dict_file(path_file=out_dir + '/dict_meta.txt', dictionary=dict_meta)
             write_dict_file(path_file=out_dir + '/dict_code.txt', dictionary=dict_code)
 
             # Loss and accuracy sumarization
@@ -75,13 +75,13 @@ def train_model(commits, params):
             # Initializing variables
             sess.run(tf.global_variables_initializer())
 
-            def train_step(input_msg, input_path, input_added_code, input_removed_code, input_labels):
+            def train_step(input_msg, input_meta, input_added_code, input_removed_code, input_labels):
                 """
                 Training step
                 """
                 feed_dict = {
                     model.input_msg: input_msg,
-                    model.input_path: input_path,
+                    model.input_meta: input_meta,
                     model.input_addedcode: input_added_code,
                     model.input_removedcode: input_removed_code,
                     model.input_y: input_labels,
@@ -98,13 +98,13 @@ def train_model(commits, params):
 
         for i in xrange(0, params.num_epochs):
             # Batche creation
-            mini_batches = random_mini_batch(X_msg=pad_msg, X_path=pad_path, X_added_code=pad_added_code,
+            mini_batches = random_mini_batch(X_msg=pad_msg, X_meta=pad_meta, X_added_code=pad_added_code,
                                              X_removed_code=pad_removed_code, Y=labels,
                                              mini_batch_size=params.batch_size)
             for j in xrange(len(mini_batches)):
                 batch = mini_batches[j]
-                input_msg, input_path, input_added_code, input_removed_code, input_labels = batch
-                train_step(input_msg, input_path, input_added_code, input_removed_code, input_labels)
+                input_msg, input_meta, input_added_code, input_removed_code, input_labels = batch
+                train_step(input_msg, input_meta, input_added_code, input_removed_code, input_labels)
                 current_step = tf.train.global_step(sess, global_step)
 
             path_curr = saver.save(sess, checkpoint_prefix, global_step=current_step)
