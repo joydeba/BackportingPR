@@ -49,7 +49,11 @@ def extract_commit(path_file):
     return dicts
 
 def reformat_meta(commits):
-    return commits    
+    # Def for future
+    return commits
+def reformat_discussion(commits):
+    # Def for future
+    return commits        
 
 
 def reformat_commit_code(commits, num_file, num_hunk, num_loc, num_leng):

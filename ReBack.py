@@ -5,7 +5,7 @@ The current version of the ReBack can be always found at https://github.com/joyd
 '''
 
 import argparse
-from Utils import extract_commit, reformat_commit_code, reformat_meta
+from Utils import extract_commit, reformat_commit_code, reformat_meta, reformat_discussion
 from train import train_model
 from predict import predict_model
 
@@ -56,6 +56,7 @@ if __name__ == '__main__':
     input_help = read_args().print_help()
 
     commits = extract_commit(path_file=input_option.data)
+    commits = reformat_discussion(commits)
     commits = reformat_meta(commits)
     commits = reformat_commit_code(commits=commits, num_file=5, num_hunk=input_option.code_hunk,
                                    num_loc=input_option.code_line, num_leng=input_option.code_length)
