@@ -55,7 +55,7 @@ if __name__ == '__main__':
     input_option = read_args().parse_args()
     input_help = read_args().print_help()
 
-    commits = extract_commit(meta_file=input_option.data)
+    commits = extract_commit(path_file=input_option.data)
     commits = reformat_meta(commits)
     commits = reformat_commit_code(commits=commits, num_file=5, num_hunk=input_option.code_hunk,
                                    num_loc=input_option.code_line, num_leng=input_option.code_length)

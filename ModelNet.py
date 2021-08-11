@@ -362,11 +362,23 @@ class ReBack(object):
             losses = tf.nn.softmax_cross_entropy_with_logits(logits=self.scores, labels=self.input_y)
             self.loss = tf.reduce_mean(losses) + self.l2_reg_lambda * self.l2_loss
 
-    # Checking the accuracy
+    # Measure definitions
     def _measure_accuracy(self):
         with tf.name_scope("accuracy"):
             correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"), name="accuracy")
+    def _measure_precision(self):
+        with tf.name_scope("precision"):
+            self.precision = tf.metrics.precision(tf.argmax(self.input_y, 1), self.predictions, name ="precision")
+    def _measure_recall(self):
+        with tf.name_scope("recall"):
+            self.recall = tf.metrics.recall(tf.argmax(self.input_y, 1), self.predictions, name ="recall")
+    def _measure_f1(self):
+        with tf.name_scope("f1_score"):
+            self.f1_score = tf.contrib.metrics.f1_score(tf.argmax(self.input_y, 1), self.predictions, name ="f1_score")
+    def _measure_auc(self):
+        with tf.name_scope("auc"):
+            self.auc = tf.metrics.auc(tf.argmax(self.input_y, 1), self.predictions, name ="auc")
             
     #  Biulding the Net
     def build_graph(self, model):
@@ -398,6 +410,10 @@ class ReBack(object):
             self._create_output_fusion_hidden_layer()
             self._create_loss_function()
             self._measure_accuracy()
+            self._measure_precision()
+            self._measure_recall()
+            self._measure_f1()
+            self._measure_auc()
         elif model == "msg":
             self._create_place_holder()
             self._create_embedding_msg_layer()
@@ -410,6 +426,10 @@ class ReBack(object):
             self._create_output_layer()
             self._create_loss_function()
             self._measure_accuracy()
+            self._measure_precision()
+            self._measure_recall()
+            self._measure_f1()
+            self._measure_auc()
         elif model == "code":
             self._create_place_holder()
             self._create_embedding_code_layer()
@@ -427,3 +447,7 @@ class ReBack(object):
             self._create_output_fusion_hidden_layer()
             self._create_loss_function()
             self._measure_accuracy()
+            self._measure_precision()
+            self._measure_recall()
+            self._measure_f1()
+            self._measure_auc()

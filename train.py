@@ -74,6 +74,7 @@ def train_model(commits, params):
 
             # Initializing variables
             sess.run(tf.global_variables_initializer())
+            sess.run(tf.local_variables_initializer())
 
             def train_step(input_msg, input_meta, input_added_code, input_removed_code, input_labels):
                 """
@@ -88,12 +89,12 @@ def train_model(commits, params):
                     model.dropout_keep_prob: params.dropout_keep_prob
                 }
 
-                _, step, summaries, loss, accuracy = sess.run(
-                    [train_op, global_step, train_summary_op, model.loss, model.accuracy],
+                _, step, summaries, loss, accuracy, precision, recall, f1_score, auc = sess.run(
+                    [train_op, global_step, train_summary_op, model.loss, model.accuracy, model.precision, model.recall, model.f1_score, model.auc],
                     feed_dict)
 
                 time_str = datetime.datetime.now().isoformat()
-                print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
+                print("{}: step {}, loss {:g}, acc {:g}, preci {}, reca {}, f1 {}, auc {}".format(time_str, step, loss, accuracy, precision, recall, f1_score, auc))
                 train_summary_writer.add_summary(summaries, step)
 
         for i in xrange(0, params.num_epochs):
