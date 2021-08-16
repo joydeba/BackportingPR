@@ -22,6 +22,14 @@ Reback works in three moduls, Preprocessing, Embedding, and Classification. Belo
 - Keras 2.3.1 (https://keras.io)
   - pip install Keras==2.3.1  
 
+# Avaiable Datasets
+
+- https://doi.org/10.5281/zenodo.5196363 
+
+# Training the model
+
+# Testing the model
+
 
 
 
