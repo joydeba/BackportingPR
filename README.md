@@ -13,11 +13,14 @@ Reback works in three moduls, Preprocessing, Embedding, and Classification. Belo
 - Tensorflow 1.10.0 (https://www.tensorflow.org)
   -  conda install -c conda-forge tensorflow=1.10.0
 
-- numpy 1.16.6 (https://www.numpy.org)
+- Numpy 1.16.6 (https://www.numpy.org)
   -   pip install numpy==1.16.6
 
-- scikit-learn 0.20.4 (https://scikit-learn.org/stable/)
+- Scikit-learn 0.20.4 (https://scikit-learn.org/stable/)
   -   pip install scikit-learn==0.20.4
+
+- Keras 2.3.1 (https://keras.io)
+  - pip install Keras==2.3.1  
 
 
 
