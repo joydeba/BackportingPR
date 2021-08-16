@@ -28,9 +28,18 @@ Reback works in three moduls, Preprocessing, Embedding, and Classification. Belo
 
 # Training the model
 
+  Run the following command to train the model: 
+
+	$ python ReBack.py --train --data backporting_PRs_train.out --model reback
+	
+  Run the following command to train the model with hyperparameters:
+
+	$ python ReBack.py --train --data backporting_PRs_train.out --model reback --embedding_dim 128  --filter_sizes "1,2" --num_filters 64
+
 # Testing the model
 
+  Run the following command to test the model: 
 
-
+	$ python ReBack.py --predict --data backporting_PRs_test.out --model reback
 
 
