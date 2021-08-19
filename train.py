@@ -10,6 +10,13 @@ from ModelNet import ReBack
 import os
 import datetime
 from Utils import random_mini_batch, write_dict_file
+import tensorflow.contrib.slim as slim
+
+
+def model_summary():
+    model_vars = tf.trainable_variables()
+    slim.model_analyzer.analyze_vars(model_vars, print_info=True)
+
 
 
 def train_model(commits, params):
@@ -75,6 +82,8 @@ def train_model(commits, params):
             # Initializing variables
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
+
+            model_summary()
 
             def train_step(input_msg, input_meta, input_added_code, input_removed_code, input_labels):
                 """
