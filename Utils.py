@@ -17,7 +17,7 @@ def load_file(path_file):
     return lines
 
 def commits_index(commits):
-    commits_index = [i for i, c in enumerate(commits) if c.startswith("commit:")]
+    commits_index = [i for i, c in enumerate(commits) if c.startswith("commits:")]
     return commits_index
 
 def commit_info(commit):
