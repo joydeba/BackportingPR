@@ -8,7 +8,7 @@ import numpy as np
 import math
 import os
 
-from extracting import commit_id, commit_stable, commit_msg, commit_date, commit_code, commit_meta
+from extracting import commit_id, commit_port, commit_msg, commit_date, commit_code, commit_meta
 from reformating import reformat_file, reformat_hunk
 
 def load_file(path_file):
@@ -22,12 +22,12 @@ def commits_index(commits):
 
 def commit_info(commit):
     id = commit_id(commit)
-    stable = commit_stable(commit)
+    port = commit_port(commit)
     date = commit_date(commit)
     meta = commit_meta(commit)
     msg = commit_msg(commit)
     code = commit_code(commit)
-    return id, stable, date, meta, msg, code    
+    return id, port, date, meta, msg, code    
 
 def extract_commit(path_file):
     commits = load_file(path_file=path_file)
@@ -36,11 +36,11 @@ def extract_commit(path_file):
     for i in xrange(0, len(indexes)):
         dict = {}
         if i == len(indexes) - 1:
-            id, stable, date, meta, msg, code = commit_info(commits[indexes[i]:])
+            id, port, date, meta, msg, code = commit_info(commits[indexes[i]:])
         else:
-            id, stable, date, meta, msg, code = commit_info(commits[indexes[i]:indexes[i + 1]])
+            id, port, date, meta, msg, code = commit_info(commits[indexes[i]:indexes[i + 1]])
         dict["id"] = id
-        dict["stable"] = stable
+        dict["port"] = port
         dict["date"] = date
         dict["meta"] = meta
         dict["msg"] = msg

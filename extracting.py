@@ -9,9 +9,9 @@ def commit_id(commit):
     return id
 
 
-def commit_stable(commit):
-    stable = commit[1].strip().split(":")[1].strip()
-    return stable
+def commit_port(commit):
+    port = commit[1].strip().split(":")[1].strip()
+    return port
 
 
 def commit_date(commit):

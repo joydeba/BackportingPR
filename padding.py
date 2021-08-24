@@ -128,7 +128,7 @@ def mapping_commit_code(type, commits, max_hunk, max_code_line, max_code_length,
     return np.array(new_pad_code)
 
 def load_label_commits(commits):
-    labels = [[0, 1] if c["stable"] == "true" else [1, 0] for c in commits]
+    labels = [[0, 1] if c["port"] == "true" else [1, 0] for c in commits]
     return np.array(labels)    
 
 def padding_commit(commits, params):

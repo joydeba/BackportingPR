@@ -414,7 +414,7 @@ class ReBack(object):
             self._measure_recall()
             self._measure_f1()
             self._measure_auc()
-        elif model == "msg":
+        elif model == "discussion":
             self._create_place_holder()
             self._create_embedding_msg_layer()
             self._create_embedding_chars_msg_layer()
@@ -430,7 +430,23 @@ class ReBack(object):
             self._measure_recall()
             self._measure_f1()
             self._measure_auc()
-        elif model == "code":
+        elif model == "meta":
+            self._create_place_holder()
+            self._create_embedding_meta_layer()
+            self._create_embedding_chars_meta_layer()
+            self._create_weight_conv_meta_layer()
+            self._create_conv_maxpool_meta_layer()
+            self._create_fusion_text_layer()
+            self._adding_dropout_fusion_layer()
+            self._create_weight_fusion_layer()
+            self._create_output_layer()
+            self._create_loss_function()
+            self._measure_accuracy()
+            self._measure_precision()
+            self._measure_recall()
+            self._measure_f1()
+            self._measure_auc()            
+        elif model == "prcodechange":
             self._create_place_holder()
             self._create_embedding_code_layer()
             self._create_embedding_chars_code_layer()
