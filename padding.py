@@ -162,7 +162,7 @@ def padding_pred_commit(commits, params, dict_msg, dict_meta, dict_code):
     pad_msg = mapping_commit_msg(msgs=msgs, max_length=params.msg_length, dict_msg=dict_msg)
 
     # Padding metadata
-    pad_meta = mapping_commit_meta(msgs=metas, max_length=params.meta_length, dict_msg=dict_meta)
+    pad_meta = mapping_commit_meta(metas=metas, max_length=params.meta_length, dict_meta=dict_meta)
 
     # Padding PR commit code
     pad_added_code = mapping_commit_code(type="added", commits=commits, max_hunk=params.code_hunk,
