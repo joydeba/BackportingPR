@@ -155,12 +155,16 @@ def padding_commit(commits, params):
 
 
 
-def padding_pred_commit(commits, params, dict_msg, dict_code):
-    msgs, codes = extract_msg(commits=commits), extract_code(commits=commits)
+def padding_pred_commit(commits, params, dict_msg, dict_meta, dict_code):
+    msgs, metas, codes = extract_msg(commits=commits), extract_meta(commits=commits), extract_code(commits=commits)
 
     # Padding discussion
     pad_msg = mapping_commit_msg(msgs=msgs, max_length=params.msg_length, dict_msg=dict_msg)
-    # Padding commit code
+
+    # Padding metadata
+    pad_meta = mapping_commit_meta(msgs=metas, max_length=params.meta_length, dict_msg=dict_meta)
+
+    # Padding PR commit code
     pad_added_code = mapping_commit_code(type="added", commits=commits, max_hunk=params.code_hunk,
                                          max_code_line=params.code_line,
                                          max_code_length=params.code_length, dict_code=dict_code)
@@ -168,4 +172,4 @@ def padding_pred_commit(commits, params, dict_msg, dict_code):
                                            max_code_line=params.code_line,
                                            max_code_length=params.code_length, dict_code=dict_code)
     labels = load_label_commits(commits=commits)
-    return pad_msg, pad_added_code, pad_removed_code, labels
+    return pad_msg, pad_meta, pad_added_code, pad_removed_code, labels

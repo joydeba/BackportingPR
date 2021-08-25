@@ -18,12 +18,13 @@ def softmax(x):
 
 
 def predict_model(commits, params):
-    meta_dict = os.path.abspath(os.path.join(os.path.curdir, params.model))
+    path_dict = os.path.abspath(os.path.join(os.path.curdir, params.model))
     dict_msg = load_dict_file(path_file=path_dict + '/dict_msg.txt')
+    dict_meta = load_dict_file(path_file=path_dict + '/dict_meta.txt')
     dict_code = load_dict_file(path_file=path_dict + '/dict_code.txt')
 
-    pad_msg, pad_added_code, pad_removed_code, labels = padding_pred_commit(commits=commits,
-                                                                            params=params, dict_msg=dict_msg,
+    pad_msg, pad_meta, pad_added_code, pad_removed_code, labels = padding_pred_commit(commits=commits,
+                                                                            params=params, dict_msg=dict_msg, dict_meta = dict_meta,
                                                                             dict_code=dict_code)
     checkpoint_dir = path_dict
     checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
