@@ -41,6 +41,7 @@ def predict_model(commits, params):
 
             # Geting placeholders from graph by name
             input_msg = graph.get_operation_by_name("input_msg").outputs[0]
+            input_meta = graph.get_operation_by_name("input_meta").outputs[0]
             input_addedcode = graph.get_operation_by_name("input_addedcode").outputs[0]
             input_removedcode = graph.get_operation_by_name("input_removedcode").outputs[0]
             dropout_keep_prob = graph.get_operation_by_name("dropout_keep_prob").outputs[0]
@@ -49,16 +50,16 @@ def predict_model(commits, params):
             scores = graph.get_operation_by_name("output/scores").outputs[0]
 
             # Batches for one epoch
-            batches = mini_batches(X_msg=pad_msg, X_added_code=pad_added_code,
+            batches = mini_batches(X_msg=pad_msg, X_meta =pad_meta, X_added_code=pad_added_code,
                                    X_removed_code=pad_removed_code,
                                    Y=labels, mini_batch_size=params.batch_size)
             # Predictions
             commits_scores = list()
 
             for batch in batches:
-                batch_input_msg, batch_input_added_code, batch_input_removed_code, batch_input_labels = batch
+                batch_input_msg, batch_input_meta, batch_input_added_code, batch_input_removed_code, batch_input_labels = batch
                 batch_scores = sess.run(scores,
-                                        {input_msg: batch_input_msg, input_addedcode: batch_input_added_code,
+                                        {input_msg: batch_input_msg, input_meta: batch_input_meta, input_addedcode: batch_input_added_code,
                                          input_removedcode: batch_input_removed_code, dropout_keep_prob: 1.0})
                 batch_scores = np.ravel(softmax(batch_scores)[:, [1]])
                 commits_scores = np.concatenate([commits_scores, batch_scores])
