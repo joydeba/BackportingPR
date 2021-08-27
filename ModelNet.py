@@ -390,10 +390,10 @@ class ReBack(object):
             self._create_weight_conv_msg_layer()
             self._create_conv_maxpool_msg_layer()
 
-            self._create_embedding_meta_layer()
-            self._create_embedding_chars_meta_layer()
-            self._create_weight_conv_meta_layer()
-            self._create_conv_maxpool_meta_layer()
+            # self._create_embedding_meta_layer()
+            # self._create_embedding_chars_meta_layer()
+            # self._create_weight_conv_meta_layer()
+            # self._create_conv_maxpool_meta_layer()
 
             self._create_embedding_code_layer()
             self._create_embedding_chars_code_layer()
@@ -404,6 +404,7 @@ class ReBack(object):
             self._create_embedding_addedcode()
             self._create_conv_maxpool_hunk_removedcode_layer()
             self._create_embedding_removedcode()
+
             self._create_fusion_text_diffcode_layer()
             self._adding_dropout_fusion_layer()
             self._create_weight_fusion_hidden_layer()
@@ -416,10 +417,12 @@ class ReBack(object):
             self._measure_auc()
         elif model == "discussion":
             self._create_place_holder()
+
             self._create_embedding_msg_layer()
             self._create_embedding_chars_msg_layer()
             self._create_weight_conv_msg_layer()
             self._create_conv_maxpool_msg_layer()
+
             self._create_fusion_text_layer()
             self._adding_dropout_fusion_layer()
             self._create_weight_fusion_layer()
