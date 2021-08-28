@@ -72,7 +72,7 @@ class ReBack(object):
                 name="W_code")
 
     '''
-    Mapping between embedding vector and discussion, meta, and commit code
+    Mapping between embedding vector - discussion, meta, commit code
     '''
     def _create_embedding_chars_layer(self, W, input):
         embedded_chars = tf.nn.embedding_lookup(W, input)
@@ -157,21 +157,21 @@ class ReBack(object):
         return pooled_outputs_text
 
     def _create_conv_maxpool_msg_layer(self):
-        pooled_outputs_text = self._create_conv_maxpool_2d_layer(filter_sizes=self.filter_sizes,
+        pooled_outputs_discussion = self._create_conv_maxpool_2d_layer(filter_sizes=self.filter_sizes,
                                                                  embedded_chars_expanded=self.embedded_chars_expanded_msg,
                                                                  W=self.w_filter_text, b=self.b_filter_text,
                                                                  max_msg_length=self.max_msg_length)
-        self.pooled_outputs_text = self.h_pool_2d(num_filters_total=len(self.filter_sizes) * self.num_filters,
-                                                  pooled_outputs=pooled_outputs_text)
+        self.pooled_outputs_discussion = self.h_pool_2d(num_filters_total=len(self.filter_sizes) * self.num_filters,
+                                                  pooled_outputs=pooled_outputs_discussion)
 
 
     def _create_conv_maxpool_meta_layer(self):
-        pooled_outputs_text = self._create_conv_maxpool_2d_layer(filter_sizes=self.filter_sizes,
+        pooled_outputs_meta = self._create_conv_maxpool_2d_layer(filter_sizes=self.filter_sizes,
                                                                  embedded_chars_expanded=self.embedded_chars_expanded_meta,
                                                                  W=self.w_filter_text, b=self.b_filter_text,
                                                                  max_msg_length=self.max_meta_length)
-        self.pooled_outputs_text = self.h_pool_2d(num_filters_total=len(self.filter_sizes) * self.num_filters,
-                                                  pooled_outputs=pooled_outputs_text)
+        self.pooled_outputs_meta = self.h_pool_2d(num_filters_total=len(self.filter_sizes) * self.num_filters,
+                                                  pooled_outputs=pooled_outputs_meta)
 
     '''
     Weight embedding layer for lines in commit code
@@ -280,23 +280,29 @@ class ReBack(object):
 
     
     '''
-    Fusion layer for text and commit code
+    Fusion layer for discussion, meta and commit code
     '''
     def _create_fusion_layer(self):
         self.fusion_layer = tf.concat(
-            [self.pooled_outputs_text, self.embedding_addedcode_layer, self.embedding_removedcode_layer], 1)
+            [self.pooled_outputs_discussion, self.pooled_outputs_meta, self.embedding_addedcode_layer, self.embedding_removedcode_layer], 1)
 
-    def _create_fusion_text_diffcode_layer(self):
+    def _create_fusion_discussion_meta_diffcode_layer(self):
         self.diff_code = self.embedding_addedcode_layer - self.embedding_removedcode_layer
         self.fusion_layer = tf.concat(
-            [self.pooled_outputs_text, self.diff_code], 1)
+            [self.pooled_outputs_discussion, self.pooled_outputs_meta, self.diff_code], 1)
 
     
     '''
     Fusion layer for discussion
     '''
-    def _create_fusion_text_layer(self):
-        self.fusion_layer = self.pooled_outputs_text
+    def _create_fusion_discussion_layer(self):
+        self.fusion_layer = self.pooled_outputs_discussion
+
+    '''
+    Fusion layer for meta
+    '''
+    def _create_fusion_meta_layer(self):
+        self.fusion_layer = self.pooled_outputs_meta        
 
     '''
     Fusion layer for code
@@ -390,10 +396,10 @@ class ReBack(object):
             self._create_weight_conv_msg_layer()
             self._create_conv_maxpool_msg_layer()
 
-            # self._create_embedding_meta_layer()
-            # self._create_embedding_chars_meta_layer()
-            # self._create_weight_conv_meta_layer()
-            # self._create_conv_maxpool_meta_layer()
+            self._create_embedding_meta_layer()
+            self._create_embedding_chars_meta_layer()
+            self._create_weight_conv_meta_layer()
+            self._create_conv_maxpool_meta_layer()
 
             self._create_embedding_code_layer()
             self._create_embedding_chars_code_layer()
@@ -404,8 +410,8 @@ class ReBack(object):
             self._create_embedding_addedcode()
             self._create_conv_maxpool_hunk_removedcode_layer()
             self._create_embedding_removedcode()
-
-            self._create_fusion_text_diffcode_layer()
+            
+            self._create_fusion_discussion_meta_diffcode_layer()
             self._adding_dropout_fusion_layer()
             self._create_weight_fusion_hidden_layer()
             self._create_output_fusion_hidden_layer()
@@ -423,7 +429,7 @@ class ReBack(object):
             self._create_weight_conv_msg_layer()
             self._create_conv_maxpool_msg_layer()
 
-            self._create_fusion_text_layer()
+            self._create_fusion_discussion_layer()
             self._adding_dropout_fusion_layer()
             self._create_weight_fusion_layer()
             self._create_output_layer()

@@ -36,7 +36,7 @@ def read_args():
     parser.add_argument('--l2_reg_lambda', type=float, default=1e-5, help='regularization rate')
     parser.add_argument('--learning_rate', type=float, default=1e-4, help='learning rate')
     parser.add_argument('--batch_size', type=int, default=64, help='batch size')
-    parser.add_argument('--num_epochs', type=int, default=25, help='the number of epochs')
+    parser.add_argument('--num_epochs', type=int, default=8, help='the number of epochs')
     parser.add_argument('--evaluate_every', type=int, default=500, help='evaluate model after this many steps')
     parser.add_argument('--checkpoint_every', type=int, default=1000, help='save model after this many steps')
     parser.add_argument('--num_checkpoints', type=int, default=100, help='the number of checkpoints to store')
