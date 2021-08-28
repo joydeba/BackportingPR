@@ -46,6 +46,12 @@ def predict_model(commits, params):
             input_removedcode = graph.get_operation_by_name("input_removedcode").outputs[0]
             dropout_keep_prob = graph.get_operation_by_name("dropout_keep_prob").outputs[0]
 
+            m_accuracy = graph.get_operation_by_name("accuracy/accuracy").outputs[0]
+            m_precision = graph.get_operation_by_name("precision/precision").outputs[0]
+            m_recall = graph.get_operation_by_name("recall/recall").outputs[0]
+            m_f1_score = graph.get_operation_by_name("f1_score/f1_score").outputs[0]
+            m_auc = graph.get_operation_by_name("auc/auc").outputs[0]
+
             # Evaluating temsor
             scores = graph.get_operation_by_name("output/scores").outputs[0]
 
@@ -58,9 +64,11 @@ def predict_model(commits, params):
 
             for batch in batches:
                 batch_input_msg, batch_input_meta, batch_input_added_code, batch_input_removed_code, batch_input_labels = batch
-                batch_scores = sess.run(scores,
+                batch_scores, accuracy, precision, recall, f1_score, auc = sess.run([scores, m_accuracy, m_precision, m_recall, m_f1_score, m_auc],
                                         {input_msg: batch_input_msg, input_meta: batch_input_meta, input_addedcode: batch_input_added_code,
                                          input_removedcode: batch_input_removed_code, dropout_keep_prob: 1.0})
+                
+                print("acc {:g}, preci {}, reca {}, f1 {}, auc {}".format(accuracy, precision, recall, f1_score, auc))                         
                 batch_scores = np.ravel(softmax(batch_scores)[:, [1]])
                 commits_scores = np.concatenate([commits_scores, batch_scores])
             write_file(path_file=os.path.abspath(os.path.join(os.path.curdir)) + '/prediction.txt',

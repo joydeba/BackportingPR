@@ -64,9 +64,13 @@ def train_model(commits, params):
             # Loss and accuracy sumarization
             loss_summary = tf.summary.scalar("loss", model.loss)
             acc_summary = tf.summary.scalar("accuracy", model.accuracy)
+            pre_summary = tf.summary.scalar("precision", model.precision)
+            rec_summary = tf.summary.scalar("recall", model.recall)
+            f1s_summary = tf.summary.scalar("f1_score", model.f1_score)
+            auc_summary = tf.summary.scalar("auc", model.auc)
 
             # Train sumarization
-            train_summary_op = tf.summary.merge([loss_summary, acc_summary])
+            train_summary_op = tf.summary.merge([loss_summary, acc_summary, pre_summary, rec_summary, f1s_summary, auc_summary])
             train_summary_dir = os.path.join(out_dir, "summaries", "train")
             train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 

@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args": ["--train", "--data", "../PRNet/PRNetBenchmarkHeuristic/fileOutputPatchN.out", "--model", "reback"],
+            "args": ["--predict", "--data", "../PRNet/PRNetBenchmarkHeuristic/fileOutputPRTesting.out", "--model", "reback"],
             "console": "integratedTerminal"
         }
     ]
