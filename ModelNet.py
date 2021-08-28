@@ -445,7 +445,7 @@ class ReBack(object):
             self._create_embedding_chars_meta_layer()
             self._create_weight_conv_meta_layer()
             self._create_conv_maxpool_meta_layer()
-            self._create_fusion_text_layer()
+            self._create_fusion_meta_layer()
             self._adding_dropout_fusion_layer()
             self._create_weight_fusion_layer()
             self._create_output_layer()
