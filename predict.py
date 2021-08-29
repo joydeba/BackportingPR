@@ -97,7 +97,7 @@ def predict_model(commits, params):
                 f1_score_list = np.concatenate([f1_score_list, [f1_score[0]]])
                 auc_list = np.concatenate([auc_list, [auc[0]]])
 
-            print("acc {:g}, preci {}, reca {}, f1 {}, auc {}".format(np.mean(accuracy_list), np.mean(precision_list), np.mean(recal_list), np.mean(f1_list), np.mean(auc_list)))                     
+            print("acc {:g}, preci {}, reca {}, f1 {}, auc {}".format(np.mean(accuracy_list), np.mean(precision_list), np.mean(recall_list), np.mean(f1_score_list), np.mean(auc_list)))                     
             write_file(path_file=os.path.abspath(os.path.join(os.path.curdir)) + '/prediction.txt',
                        data=commits_scores)
 
