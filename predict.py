@@ -10,6 +10,7 @@ import os
 import tensorflow as tf
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support as score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score , roc_auc_score
 
 
 def softmax(x):
@@ -75,8 +76,8 @@ def predict_model(commits, params):
             # f1_score_list = list()
             # auc_list = list()
 
-            init = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
-            sess.run(init)    
+            # init = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
+            # sess.run(init)    
             for batch in batches:
                 
                 batch_input_msg, batch_input_meta, batch_input_added_code, batch_input_removed_code, batch_input_labels = batch
@@ -109,10 +110,13 @@ def predict_model(commits, params):
             predicted = [1 if value > 0.5 else 2 for value in commits_scores.tolist()]
 
             precision, recall, fscore, support = score(y_test, predicted)
+            accuracy = accuracy_score(y_test, predicted)
+            auc_score = roc_auc_score(y_test, predicted)
 
+            print('Accuracy: {}'.format(accuracy))
             print('precision: {}'.format(precision))
             print('recall: {}'.format(recall))
             print('fscore: {}'.format(fscore))
-            print('support: {}'.format(support))
+            print('AUC: {}'.format(auc_score))
 
 
