@@ -8,6 +8,7 @@ import argparse
 from Utils import extract_commit, reformat_commit_code, reformat_meta, reformat_discussion
 from train import train_model
 from predict import predict_model
+import time
 
 
 def read_args():
@@ -52,6 +53,7 @@ def read_args():
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     input_option = read_args().parse_args()
     input_help = read_args().print_help()
 
@@ -72,9 +74,11 @@ if __name__ == '__main__':
         print '--------------------------------------------------------------------------------'
         print '--------------------------Model testing is completed----------------------------'
         print '--------------------------------------------------------------------------------'
+        print("--- %s seconds ---" % (time.time() - start_time))
         exit()
     else:
         print '--------------------------------------------------------------------------------'
         print 'Wrongs arguments are passed, please write -h to see the argument usage'
         print '--------------------------------------------------------------------------------'
         exit()
+    
