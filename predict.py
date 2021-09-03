@@ -9,6 +9,9 @@ from padding import padding_pred_commit
 import os
 import tensorflow as tf
 import numpy as np
+from sklearn.metrics import precision_recall_fscore_support as score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score , roc_auc_score
+
 
 
 def softmax(x):
@@ -41,14 +44,14 @@ def predict_model(commits, params):
             saver = tf.train.import_meta_graph("{}.meta".format(checkpoint_file))
             saver.restore(sess, checkpoint_file)
 
-            predictions = graph.get_operation_by_name("output/predictions").outputs[0]
-            input_y = graph.get_operation_by_name("input_y").outputs[0]
+            # predictions = graph.get_operation_by_name("output/predictions").outputs[0]
+            # input_y = graph.get_operation_by_name("input_y").outputs[0]
 
             
-            m_recall = tf.metrics.recall(tf.argmax(input_y, 1), predictions, name ="recall")
-            m_f1_score = tf.contrib.metrics.f1_score(tf.argmax(input_y, 1), predictions, name ="f1_score")
-            m_auc = tf.metrics.auc(tf.argmax(input_y, 1), predictions, name ="auc")
-            m_precision = tf.metrics.precision(tf.argmax(input_y, 1), predictions, name ="precision")
+            # m_recall = tf.metrics.recall(tf.argmax(input_y, 1), predictions, name ="recall")
+            # m_f1_score = tf.contrib.metrics.f1_score(tf.argmax(input_y, 1), predictions, name ="f1_score")
+            # m_auc = tf.metrics.auc(tf.argmax(input_y, 1), predictions, name ="auc")
+            # m_precision = tf.metrics.precision(tf.argmax(input_y, 1), predictions, name ="precision")
                     
 
             # Geting placeholders from graph by name
@@ -68,36 +71,53 @@ def predict_model(commits, params):
                                    Y=labels, mini_batch_size=params.batch_size)
                                                                                   
             commits_scores = list()
-            accuracy_list = list()
-            precision_list = list()
-            recall_list = list()
-            f1_score_list = list()
-            auc_list = list()
+            # accuracy_list = list()
+            # precision_list = list()
+            # recall_list = list()
+            # f1_score_list = list()
+            # auc_list = list()
 
-            init = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
-            sess.run(init)    
+            # init = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
+            # sess.run(init)    
             for batch in batches:
                 
                 batch_input_msg, batch_input_meta, batch_input_added_code, batch_input_removed_code, batch_input_labels = batch
-                correct_predictions = tf.equal(predictions, tf.argmax(batch_input_labels, 1))
-                m_accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"), name="accuracy")
+                # correct_predictions = tf.equal(predictions, tf.argmax(batch_input_labels, 1))
+                # m_accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"), name="accuracy")
 
-                batch_scores, accuracy, precision, recall, f1_score, auc = sess.run([scores, m_accuracy, m_precision, m_recall, m_f1_score, m_auc],
+                # batch_scores, accuracy, precision, recall, f1_score, auc = sess.run([scores, m_accuracy, m_precision, m_recall, m_f1_score, m_auc],
+                #                         {input_msg: batch_input_msg, input_meta: batch_input_meta, input_addedcode: batch_input_added_code,
+                #                          input_removedcode: batch_input_removed_code, input_y:batch_input_labels, dropout_keep_prob: 1.0})
+
+                batch_scores = sess.run(scores,
                                         {input_msg: batch_input_msg, input_meta: batch_input_meta, input_addedcode: batch_input_added_code,
-                                         input_removedcode: batch_input_removed_code, input_y:batch_input_labels, dropout_keep_prob: 1.0})
+                                         input_removedcode: batch_input_removed_code, dropout_keep_prob: 1.0})                                         
               
 
                 batch_scores = np.ravel(softmax(batch_scores)[:, [1]])
                 commits_scores = np.concatenate([commits_scores, batch_scores])
 
 
-                accuracy_list = np.concatenate([accuracy_list, [accuracy]])
-                precision_list = np.concatenate([precision_list, [precision[0]]])
-                recall_list = np.concatenate([recall_list, [recall[0]]])
-                f1_score_list = np.concatenate([f1_score_list, [f1_score[0]]])
-                auc_list = np.concatenate([auc_list, [auc[0]]])
+                # accuracy_list = np.concatenate([accuracy_list, [accuracy]])
+                # precision_list = np.concatenate([precision_list, [precision[0]]])
+                # recall_list = np.concatenate([recall_list, [recall[0]]])
+                # f1_score_list = np.concatenate([f1_score_list, [f1_score[0]]])
+                # auc_list = np.concatenate([auc_list, [auc[0]]])
 
-            print("acc {:g}, preci {}, reca {}, f1 {}, auc {}".format(np.mean(accuracy_list), np.mean(precision_list), np.mean(recal_list), np.mean(f1_list), np.mean(auc_list)))                     
+            # print("acc {:g}, preci {}, reca {}, f1 {}, auc {}".format(np.mean(accuracy_list), np.mean(precision_list), np.mean(recall_list), np.mean(f1_score_list), np.mean(auc_list)))                     
             write_file(path_file=os.path.abspath(os.path.join(os.path.curdir)) + '/prediction.txt',
                        data=commits_scores)
+            y_test =  labels.dot(1 << np.arange(labels.shape[-1] - 1, -1, -1)).tolist()
+            predicted = [1 if value > 0.5 else 2 for value in commits_scores.tolist()]
+
+            precision, recall, fscore, support = score(y_test, predicted)
+            accuracy = accuracy_score(y_test, predicted)
+            auc_score = roc_auc_score(y_test, predicted)
+
+            print('Accuracy: {}'.format(accuracy))
+            print('precision: {}'.format(precision))
+            print('recall: {}'.format(recall))
+            print('fscore: {}'.format(fscore))
+            print('AUC: {}'.format(auc_score))
+
 

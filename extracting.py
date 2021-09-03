@@ -19,11 +19,11 @@ def commit_date(commit):
     return committer_date
 
 def commit_meta(commit):
-    commit_meta = commit[6].strip()
+    commit_meta = commit[9].strip()
     return commit_meta
 
 def commit_msg(commit):
-    commit_msg = commit[9].strip()
+    commit_msg = commit[6].strip()
     return commit_msg
 
 
